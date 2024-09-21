@@ -2,6 +2,7 @@ package com.example.product.controller;
 
 
 import com.example.product.entitiy.Product;
+import com.example.product.exception.ProductNotFoundException;
 import com.example.product.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/product")
 public class ProductController {
 
     @Autowired
@@ -25,6 +27,13 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         Optional<Product> product = productService.getProductById(id);
+        return product.map(ResponseEntity::ok)
+                .orElseThrow(() -> new ProductNotFoundException("Product with ID " + id + " not found"));
+    }
+
+    @GetMapping("/{id}/{productName}")
+    public ResponseEntity<Product> getProductByName(@PathVariable String productName) {
+        Optional<Product> product = productService.findByName(productName);
         return product.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
