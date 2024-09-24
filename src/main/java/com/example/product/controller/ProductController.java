@@ -35,7 +35,7 @@ public class ProductController {
     public ResponseEntity<Product> getProductByName(@PathVariable String productName) {
         Optional<Product> product = productService.findByName(productName);
         return product.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ProductNotFoundException("Product with id" +productName+ "not found "));
     }
 
     @PostMapping
