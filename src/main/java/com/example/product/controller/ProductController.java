@@ -21,17 +21,21 @@ public class ProductController {
 
     @GetMapping
     public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+        List<Product> product = productService.getAllProducts();
+        if (product==null || product.isEmpty()){
+            throw new ProductNotFoundException("There is  no product here");
+        }
+        return product;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Optional<Product> product = productService.getProductById(id);
+        Optional<Product> product = Optional.ofNullable(productService.getProductById(id));
         return product.map(ResponseEntity::ok)
                 .orElseThrow(() -> new ProductNotFoundException("Product with ID " + id + " not found"));
     }
 
-    @GetMapping("/{id}/{productName}")
+    @GetMapping("/name/{productName}")
     public ResponseEntity<Product> getProductByName(@PathVariable String productName) {
         Optional<Product> product = productService.findByName(productName);
         return product.map(ResponseEntity::ok)
@@ -40,14 +44,15 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product createdProduct = productService.createProduct(product);
-        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+        Optional<Product> product1 = Optional.ofNullable(productService.createProduct(product));
+        return  product1.map(ResponseEntity::ok)
+                .orElseThrow(() -> new RuntimeException("Error"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
-        return ResponseEntity.ok(updatedProduct);
+    public ResponseEntity<String> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+           productService.updateProduct(id,product);
+        return new ResponseEntity<>("The item has updated sucessfuly", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

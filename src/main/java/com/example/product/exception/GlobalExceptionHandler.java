@@ -15,11 +15,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<Object> handleProductNotFoundException(ProductNotFoundException ex, WebRequest request) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", ex.getMessage());
-
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Product Not Found " + ex.getMessage(), HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception ex, WebRequest request) {
@@ -28,5 +24,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("Message ", ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    public ResponseEntity<String> handleProductCreationException(ProductCreationException ex) {
+        return new ResponseEntity<>("Product creation failed: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
