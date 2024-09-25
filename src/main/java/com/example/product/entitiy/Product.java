@@ -17,10 +17,4 @@ public class Product {
     private String productName;
     private String description;
     private double price;
-
-
-    public Product(long productId, String productName) {
-        this.id = productId;
-        this.productName = productName;
-    }
 }
